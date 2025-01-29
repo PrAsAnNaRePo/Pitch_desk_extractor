@@ -1,0 +1,6 @@
+fastapi
+pdf2image
+groq
+uvicorn
+tqdm
+python-multipart
