@@ -64,23 +64,24 @@ extractor_system_prompt = (
 print(''.join(extractor_system_prompt))
 
 
-insighter_system_prompt = (
-    "you are a data insight extractor.\n",
-    "given the image of silde or a page of a pitch deck, you have to extract key information from it.\n",
-
-    "extract text and understand images i.e., graphs, images, tables etc.\n"
-    "describe the image or graph in every aspect possible, that should be understandable without seeing the image.\n"
-    
-    "respond with neatly formatted markdown format with all necassary insights in it.\n"
-    "make sure you have collected all the information and put it in the response."
-)
 
 
 class Insighter:
     def __init__(self):
         self.client = Groq()
 
-    def extract(self, pages: List[str]):
+    def extract(self, pages: List[str], doc_type: str):
+        insighter_system_prompt = (
+"you are a data insight extractor.\n",
+"given the image of silde or a page of a "+ doc_type +", you have to extract key information from it.\n",
+
+"extract text and understand images i.e., graphs, images, tables etc.\n"
+"describe the image or graph in every aspect possible, that should be understandable without seeing the image.\n"
+
+"respond with neatly formatted markdown format with all necassary insights in it.\n"
+"make sure you have collected all the information and put it in the response."
+        )
+
         total_response = ''
 
         for i, page in tqdm(enumerate(pages)):
@@ -117,12 +118,29 @@ class Extractor:
         print(final_answer)
         return final_answer
     
-    def extract(self, page_info: str):
+    def extract(self, page_info: str, doc_type: str, dynamic_keys: str = None):
+
+        if dynamic_keys:
+            d_extractor_system_prompt = (
+                "you are a data extractor.\n"
+                "you'll ge given a contents of a " + doc_type + ", typically a text for you."
+                " you have to extract key information from it.\n"
+
+                "here are the fields you have to look for:\n"
+                "" + dynamic_keys + "\n"
+
+                "NOTE:\n",
+                "- make sure to extract the key-value pairs in JSON format.\n",
+                "- if you can't find any keys or you not sure about it, then leave as null"
+            )
+            system = ''.join(d_extractor_system_prompt)
+        else:
+            system = ''.join(extractor_system_prompt)
         chat_completion = self.client.chat.completions.create(
             messages=[
                 {
                     'role': 'system',
-                    'content': ''.join(extractor_system_prompt)
+                    'content': system
                 },
                 {
                     "role": "user",
