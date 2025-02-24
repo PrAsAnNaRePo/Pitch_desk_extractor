@@ -1,7 +1,7 @@
 import requests
 import json
 
-url = "http://0.0.0.0:8000/v2/extract"
+url = "http://0.0.0.0:3000/v2/extract"
 
 dynamic_key = [
     {
@@ -80,7 +80,7 @@ dynamic_key = [
 with open("airbnb-original-deck-2008.pdf", "rb") as file:
     files = {"file": file}
     params = {"doc_type": "pitch desk", "dynamic_keys": json.dumps(dynamic_key)}  # Pass doc_type as a query parameter
-    response = requests.get(url, files=files, params=params)
+    response = requests.post(url, files=files, params=params)
 
 print(response.json())
 

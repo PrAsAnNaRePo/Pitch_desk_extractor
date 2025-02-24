@@ -9,7 +9,7 @@ app = FastAPI()
 insighter = Insighter()
 extractor = Extractor()
 
-@app.get("/extract")
+@app.post("/extract")
 async def extract(doc_type: str = Query(..., description="Type of document"), file: UploadFile = File(...)):
     try:
         file_bytes = await file.read()
@@ -31,7 +31,7 @@ async def extract(doc_type: str = Query(..., description="Type of document"), fi
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/v2/extract")
+@app.post("/v2/extract")
 async def extract(doc_type: str = Query(..., description="Type of document"), file: UploadFile = File(...), dynamic_keys: str = Query(..., description="Keys to extract")):
     try:
         file_bytes = await file.read()
