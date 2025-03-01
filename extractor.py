@@ -121,17 +121,21 @@ class Extractor:
     def extract(self, page_info: str, doc_type: str, dynamic_keys: str = None):
 
         if dynamic_keys:
+            fields = ''
+            for i in dynamic_keys:
+                fields += f'- {i["name"]}:{i["type"]} {i["description"]}\n'
             d_extractor_system_prompt = (
                 "you are a data extractor.\n"
                 "you'll ge given a contents of a " + doc_type + ", typically a text for you."
                 " you have to extract key information from it.\n"
 
                 "here are the fields you have to look for:\n"
-                "" + dynamic_keys + "\n"
+                "" + fields + "\n"
 
                 "NOTE:\n",
                 "- make sure to extract the key-value pairs in JSON format.\n",
-                "- if you can't find any keys or you not sure about it, then leave as null"
+                "- if you can't find any keys or you not sure about it, then leave as null\n",
+                "- Make sure you include all the keys mentioned above in the output, even some values are null\n",
             )
             system = ''.join(d_extractor_system_prompt)
         else:
